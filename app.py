@@ -160,6 +160,26 @@ def porcentajes():
         })
     return render_template('porcentajes.html', participantes=porcentaje_list, total_dias=total_dias)
 
+@app.route('/reporte', methods=['GET', 'POST'])
+def reporte():
+    participantes = obtener_participantes()  # Función que tienes para obtener lista
+    if request.method == 'POST':
+        fecha = request.form.get('fecha')
+        for p in participantes:
+            presente_catequesis = request.form.get(f'presente_catequesis_{p.id}') == '1'
+            observacion_catequesis = request.form.get(f'observacion_catequesis_{p.id}', '')
+            presente_misa = request.form.get(f'presente_misa_{p.id}') == '1'
+            observacion_misa = request.form.get(f'observacion_misa_{p.id}', '')
+
+            # Aquí guardas o actualizas la asistencia en BD
+            guardar_asistencia(p.id, fecha, presente_catequesis, observacion_catequesis,
+                              presente_misa, observacion_misa)
+
+        return redirect(url_for('index'))
+
+    return render_template('reporte.html', participantes=participantes)
+
+
 @app.route('/descargar_pdf', methods=['POST'])
 def descargar_pdf():
     resultados = list(asistencias_collection.find({}))
