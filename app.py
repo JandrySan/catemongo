@@ -26,6 +26,35 @@ def index():
     fechas_registradas = asistencias_collection.distinct('fecha')
     return render_template('index.html', participantes=participantes, hoy=hoy, fecha=hoy, fechas_registradas=fechas_registradas)
 
+@app.route('/registrar_asistencia', methods=['POST'])
+def registrar_asistencia():
+    fecha_str = request.form['fecha']
+    presentes = request.form.getlist('asistencia')  # lista de IDs como strings
+
+    try:
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    except ValueError:
+        return "Fecha inválida", 400
+
+    # Eliminar asistencias previas de esa fecha
+    asistencias_collection.delete_many({'fecha': fecha_str})
+
+    participantes = list(participantes_collection.find({'activo': True}))
+    for p in participantes:
+        participante_id_str = str(p['_id'])
+        presente = participante_id_str in presentes
+
+        asistencia = {
+            'fecha': fecha_str,
+            'participante_id': p['_id'],  # importante: ObjectId
+            'presente_catequesis': presente,
+            'presente_misa': False  # si manejas misa en otro form, puedes omitir o modificar esto
+        }
+
+        asistencias_collection.insert_one(asistencia)
+
+    return redirect(url_for('index'))
+
 @app.route('/nuevo_participante')
 def nuevo_participante():
     return render_template('nuevo_participante.html')
@@ -67,10 +96,22 @@ def eliminar_participante(id):
 
 @app.route('/historial/<id>')
 def historial(id):
-    participante = participantes_collection.find_one({'_id': ObjectId(id)})
-    asistencias = list(asistencias_collection.find({'participante_id': id}))
-    total_asistencias = sum(1 for a in asistencias if a.get('presente_catequesis') or a.get('presente_misa'))
-    return render_template('historial.html', participante=participante, asistencias=asistencias, total_asistencias=total_asistencias)
+    try:
+        participante = participantes_collection.find_one({'_id': ObjectId(id)})
+        if not participante:
+            return "Participante no encontrado", 404
+
+        # Filtrar asistencias usando ObjectId
+        asistencias = list(asistencias_collection.find({'participante_id': ObjectId(id)}))
+
+        total_asistencias = sum(1 for a in asistencias if a.get('presente_catequesis') or a.get('presente_misa'))
+
+        return render_template('historial.html',
+                               participante=participante,
+                               asistencias=asistencias,
+                               total_asistencias=total_asistencias)
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
 @app.route('/editar_asistencia/<fecha>', methods=['GET', 'POST'])
 def editar_asistencia(fecha):
