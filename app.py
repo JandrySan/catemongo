@@ -1,19 +1,15 @@
+from datetime import datetime
+from bson.objectid import ObjectId
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_pymongo import PyMongo
-from bson.objectid import ObjectId
-from datetime import datetime
-from dotenv import load_dotenv
-import os
 import io
+from collections import defaultdict
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-from collections import defaultdict
-
-load_dotenv()
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = os.getenv("MONGO_URI")
+app.config["MONGO_URI"] = "mongodb+srv://jandrypaulsanchez:HsJPpMVr8yBuwPcm@cluster0.hxlrvov.mongodb.net/catequesis?retryWrites=true&w=majority&appName=Cluster0"
 mongo = PyMongo(app)
 
 participantes_collection = mongo.db.participantes
@@ -32,7 +28,7 @@ def registrar_asistencia():
     presentes = request.form.getlist('asistencia')  # lista de IDs como strings
 
     try:
-        fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        datetime.strptime(fecha_str, "%Y-%m-%d")
     except ValueError:
         return "Fecha inválida", 400
 
@@ -46,11 +42,10 @@ def registrar_asistencia():
 
         asistencia = {
             'fecha': fecha_str,
-            'participante_id': p['_id'],  # importante: ObjectId
+            'participante_id': p['_id'],
             'presente_catequesis': presente,
-            'presente_misa': False  # si manejas misa en otro form, puedes omitir o modificar esto
+            'presente_misa': False  # Ajusta si usas misa
         }
-
         asistencias_collection.insert_one(asistencia)
 
     return redirect(url_for('index'))
@@ -96,22 +91,12 @@ def eliminar_participante(id):
 
 @app.route('/historial/<id>')
 def historial(id):
-    try:
-        participante = participantes_collection.find_one({'_id': ObjectId(id)})
-        if not participante:
-            return "Participante no encontrado", 404
-
-        # Filtrar asistencias usando ObjectId
-        asistencias = list(asistencias_collection.find({'participante_id': ObjectId(id)}))
-
-        total_asistencias = sum(1 for a in asistencias if a.get('presente_catequesis') or a.get('presente_misa'))
-
-        return render_template('historial.html',
-                               participante=participante,
-                               asistencias=asistencias,
-                               total_asistencias=total_asistencias)
-    except Exception as e:
-        return f"Error: {str(e)}", 500
+    participante = participantes_collection.find_one({'_id': ObjectId(id)})
+    if not participante:
+        return "Participante no encontrado", 404
+    asistencias = list(asistencias_collection.find({'participante_id': ObjectId(id)}))
+    total_asistencias = sum(1 for a in asistencias if a.get('presente_catequesis') or a.get('presente_misa'))
+    return render_template('historial.html', participante=participante, asistencias=asistencias, total_asistencias=total_asistencias)
 
 @app.route('/editar_asistencia/<fecha>', methods=['GET', 'POST'])
 def editar_asistencia(fecha):
@@ -129,7 +114,7 @@ def editar_asistencia(fecha):
             observ_cat = observaciones_catequesis[idx] if idx < len(observaciones_catequesis) else ""
             observ_mi = observaciones_misa[idx] if idx < len(observaciones_misa) else ""
 
-            asistencia = asistencias_collection.find_one({'fecha': fecha, 'participante_id': p_id})
+            asistencia = asistencias_collection.find_one({'fecha': fecha, 'participante_id': p['_id']})
             if asistencia:
                 asistencias_collection.update_one(
                     {'_id': asistencia['_id']},
@@ -143,7 +128,7 @@ def editar_asistencia(fecha):
             else:
                 asistencias_collection.insert_one({
                     'fecha': fecha,
-                    'participante_id': p_id,
+                    'participante_id': p['_id'],
                     'presente_catequesis': presente_cat,
                     'presente_misa': presente_mi,
                     'observacion_catequesis': observ_cat,
@@ -161,13 +146,13 @@ def porcentajes():
     participantes = list(participantes_collection.find({'activo': True}))
     porcentaje_list = []
     for p in participantes:
-        p_id = str(p['_id'])
+        p_id = p['_id']
         catequesis_count = asistencias_collection.count_documents({'participante_id': p_id, 'presente_catequesis': True})
         misa_count = asistencias_collection.count_documents({'participante_id': p_id, 'presente_misa': True})
         porcentaje_catequesis = (catequesis_count / total_dias * 100) if total_dias > 0 else 0
         porcentaje_misa = (misa_count / total_dias * 100) if total_dias > 0 else 0
         porcentaje_list.append({
-            'id': p_id,
+            'id': str(p_id),
             'nombre': p['nombre'],
             'grupo': p['grupo'],
             'porcentaje_catequesis': round(porcentaje_catequesis, 2),
@@ -178,7 +163,7 @@ def porcentajes():
 @app.route('/descargar_pdf', methods=['POST'])
 def descargar_pdf():
     resultados = list(asistencias_collection.find({}))
-    participantes_map = {str(p['_id']): p for p in participantes_collection.find()}
+    participantes_map = {p['_id']: p for p in participantes_collection.find()}
 
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer)
