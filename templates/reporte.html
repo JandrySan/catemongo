@@ -116,11 +116,12 @@
             <tr>
                 <td>{{ p.nombre }}</td>
                 <td>{{ p.grupo }}</td>
-                <td><input type="checkbox" name="presente_catequesis" value="{{ p.id }}"></td>
-                <td><input type="text" name="observacion_catequesis"></td>
-                <td><input type="checkbox" name="presente_misa" value="{{ p.id }}"></td>
-                <td><input type="text" name="observacion_misa"></td>
+                <td><input type="checkbox" name="presente_catequesis_{{ p.id }}" value="1"></td>
+                <td><input type="text" name="observacion_catequesis_{{ p.id }}"></td>
+                <td><input type="checkbox" name="presente_misa_{{ p.id }}" value="1"></td>
+                <td><input type="text" name="observacion_misa_{{ p.id }}"></td>
             </tr>
+
             {% endfor %}
         </table>
 
