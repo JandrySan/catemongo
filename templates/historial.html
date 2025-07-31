@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Historial de {{ participante.nombre }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 40px;
+            max-width: 700px;
+            margin: auto;
+        }
+        h1 {
+            color: #0f172a;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #1e3a8a;
+            text-align: center;
+            margin-top: 0;
+        }
+        p {
+            text-align: center;
+            color: #334155;
+            margin-bottom: 30px;
+        }
+        h3 {
+            color: #0f172a;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        thead {
+            background-color: #3b82f6;
+            color: white;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        tbody tr:hover {
+            background-color: #e2e8f0;
+        }
+        a button,
+        form button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 16px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        a button:hover,
+        form button:hover {
+            background-color: #2563eb;
+        }
+        form {
+            display: inline;
+        }
+        a[href="/"] {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #3b82f6;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        a[href="/"]:hover {
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <a href="/editar_participante/{{ participante.id }}">
+        <button>Editar</button>
+    </a>
+    <form method="POST" action="/eliminar_participante/{{ participante.id }}">
+        <button type="submit" 
+                onclick="return confirm('¿Estás seguro de eliminar este participante?')">Eliminar</button>
+    </form>
+
+    <h1>Historial de Asistencia</h1>
+    <h2>{{ participante.nombre }} - {{ participante.grupo }}</h2>
+    <p>Edad: {{ participante.edad }} | Contacto: {{ participante.contacto }}</p>
+
+    <h3>Total de asistencias: {{ total_asistencias }}</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Catequesis</th>
+                <th>Observación Catequesis</th>
+                <th>Misa</th>
+                <th>Observación Misa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in asistencias %}
+            <tr>
+                <td>{{ a.fecha }}</td>
+                <td>{{ 'Sí' if a.presente_catequesis else 'No' }}</td>
+                <td>{{ a.observacion_catequesis or '-' }}</td>
+                <td>{{ 'Sí' if a.presente_misa else 'No' }}</td>
+                <td>{{ a.observacion_misa or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="/">← Volver al inicio</a>
+</body>
+</html>

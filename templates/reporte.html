@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reporte de Asistencia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            padding: 40px;
+            max-width: 1000px;
+            margin: auto;
+            color: #1e293b;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0f172a;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+
+        input[type="date"] {
+            padding: 8px 10px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            width: 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 16px;
+            margin-top: 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        a button {
+            background-color: #64748b;
+        }
+
+        a button:hover {
+            background-color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <h1>Registrar asistencia por fecha</h1>
+    <form method="POST" action="/reporte">
+        <label>Fecha:</label>
+        <input type="date" name="fecha" required>
+
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Grupo</th>
+                <th>Catequesis</th>
+                <th>Observación Catequesis</th>
+                <th>Misa</th>
+                <th>Observación Misa</th>
+            </tr>
+             {% for p in participantes %}
+            <tr>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.grupo }}</td>
+                <td><input type="checkbox" name="presente_catequesis" value="{{ p.id }}"></td>
+                <td><input type="text" name="observacion_catequesis"></td>
+                <td><input type="checkbox" name="presente_misa" value="{{ p.id }}"></td>
+                <td><input type="text" name="observacion_misa"></td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <button type="submit">Guardar Asistencia</button>
+        <a href="/"><button type="button">Cancelar</button></a>
+    </form>
+</body>
+</html>

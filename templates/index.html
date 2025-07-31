@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro de Asistencia - Catequesis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 40px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            color: #0f172a;
+        }
+
+        a button,
+        form button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 18px;
+            margin: 5px 10px 20px 0;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        a button:hover,
+        form button:hover {
+            background-color: #2563eb;
+        }
+
+        form {
+            display: inline;
+        }
+
+        ul {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            list-style: none;
+        }
+
+        ul li {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        ul li:last-child {
+            border-bottom: none;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: #1d4ed8;
+            font-weight: bold;
+        }
+
+        ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    
+    <a href="/porcentajes"><button>Ver porcentaje de asistencia</button></a>
+    <a href="/nuevo_participante"><button>Registrar nuevo participante</button></a>
+    <a href="/reporte"><button>Registrar asistencia por fecha</button></a>
+
+    <form method="POST" action="/descargar_pdf">
+        <button type="submit">📄 Descargar Reporte Completo PDF</button>
+    </form>
+
+
+
+    <h1>Participantes activos ({{ hoy }})</h1>
+    <ul>
+        {% for p in participantes %}
+        <li>
+            <a href="/historial/{{ p.id }}">{{ p.nombre }}</a> ({{ p.grupo }})
+        </li>
+        {% endfor %}
+    </ul>
+    <!-- Por ejemplo, debajo de tu listado de participantes actuales -->
+
+<h2>Fechas de Asistencia</h2>
+<ul>
+    {% for fecha in fechas_registradas %}
+        <li>
+            {{ fecha }}
+            <a href="{{ url_for('editar_asistencia', fecha=fecha) }}">
+                <button>Editar Asistencia</button>
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nuevo Participante</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        form {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #334155;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        a button {
+            background-color: #64748b;
+        }
+
+        a button:hover {
+            background-color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST" action="/guardar_participante">
+        <h1>Registrar Nuevo Participante</h1>
+        
+        <label>Nombre completo:</label>
+        <input type="text" name="nombre" required>
+
+        <label>Edad:</label>
+        <input type="number" name="edad">
+
+        <label>Grupo:</label>
+        <select name="grupo" required>
+            <option value="">-- Selecciona un grupo --</option>
+            <option value="Comunión">Comunión</option>
+            <option value="Confirmación">Confirmación</option>
+        </select>
+
+        <label>Contacto (opcional):</label>
+        <input type="text" name="contacto">
+
+        <button type="submit">Guardar</button>
+        <a href="/"><button type="button">Cancelar</button></a>
+    </form>
+</body>
+</html>

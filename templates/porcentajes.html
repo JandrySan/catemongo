@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Porcentaje de Asistencia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 40px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #0f172a;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #334155;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        a button {
+            background-color: #64748b;
+            color: white;
+            padding: 10px 16px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        a button:hover {
+            background-color: #475569;
+        }
+
+        a {
+            display: flex;
+            justify-content: center;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Porcentaje de Asistencia por Participante</h1>
+    <p>Total de días registrados: {{ total_dias }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Grupo</th>
+                <th>% Catequesis</th>
+                <th>% Misa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in participantes %}
+            <tr>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.grupo }}</td>
+                <td>{{ p.porcentaje_catequesis }}%</td>
+                <td>{{ p.porcentaje_misa }}%</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    </table>
+
+    <a href="/"><button>← Volver al inicio</button></a>
+</body>
+</html>
